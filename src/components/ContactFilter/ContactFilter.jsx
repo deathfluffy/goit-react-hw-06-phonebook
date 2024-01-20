@@ -1,24 +1,28 @@
-import propTypes from 'prop-types';
+// ContactFilter.jsx
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import css from './ContactFilter.module.css';
+import { getFilter, setFilter } from '../../redux/ContactFilter/ContactFilter';
 
-import css from './ContactFilter.module.css'
-
-export default function ContactFilter ({ filter, onFilter })  {
+const ContactFilter = () => {
+  const dispatch = useDispatch();
+  const filter = useSelector(getFilter);
   return (
     <section className={css.FilterSection}>
-      <form className={css.FormLabel} htmlFor="filter">Find contacts by name</form>
+      <form className={css.FormLabel} htmlFor="filter">
+        Find contacts by name
+      </form>
       <div>
-        <input className={css.inputfilter}
+        <input
+          className={css.inputfilter}
           type="text"
           name="filter"
+          onChange={event => dispatch(setFilter(event.currentTarget.value))}
           value={filter}
-          onChange={onFilter}
         />
       </div>
     </section>
   );
 };
 
-ContactFilter.propTypes = {
-  onFilter: propTypes.func,
-  filter: propTypes.string,
-};
+export default ContactFilter;
