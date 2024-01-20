@@ -5,7 +5,7 @@ import { getFilter } from '../../redux/ContactFilter/ContactFilter';
 import { ContactItem } from 'components/ContactItem/ContactItem';
 import css from './ContactList.module.css';
 
-const ContactList = () => {
+export default function ContactList  ()  {
   const contacts = useSelector(getContacts);
   const filterValue = useSelector(getFilter);
 
@@ -28,4 +28,4 @@ const ContactList = () => {
   );
 };
 
-export default ContactList;
+

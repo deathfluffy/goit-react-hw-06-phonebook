@@ -1,10 +1,8 @@
-// ContactFilter.jsx
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import css from './ContactFilter.module.css';
 import { getFilter, setFilter } from '../../redux/ContactFilter/ContactFilter';
 
-const ContactFilter = () => {
+export default function ContactFilter ()  {
   const dispatch = useDispatch();
   const filter = useSelector(getFilter);
   return (
@@ -25,4 +23,4 @@ const ContactFilter = () => {
   );
 };
 
-export default ContactFilter;
+;
