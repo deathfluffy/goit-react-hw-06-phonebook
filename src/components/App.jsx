@@ -1,67 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import  ContactForm  from './ContactForm/ContactForm';
+import ContactForm from './ContactForm/ContactForm';
 import ContactList from './ContactList/ContactList';
 import ContactFilter from './ContactFilter/ContactFilter';
 import css from './AppStyled.module.css';
+import { getContacts, addContact } from '../redux/Contact/ContactsSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import Message from './Message/Message';
 
-export default function App  ()  {
-  const [filter, setFilter] = useState('');
-  const [contacts, setContacts] = useState(() => {
-    return (
-      JSON.parse(window.localStorage.getItem('contacts')) ?? [
-        { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-        { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-        { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-        { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-      ]
-    );
-  });
-
-  useEffect(() => {
-    window.localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
-
-
+export default function App() {
+  const dispatch = useDispatch();
+  const contactsItems = useSelector(getContacts);
   const onFormSubmit = ({ id, name, number }) => {
     const contact = { id, name, number };
-    setContacts((prevContacts) => [contact, ...prevContacts]);
+    dispatch(addContact(contact));
   };
-
-  const onFilter = (e) => {
-    setFilter(e.target.value);
-  };
-
-  const onDeleteHandler = (id) => {
-    const filteredContacts = contacts.filter((contact) => contact.id !== id);
-    setContacts(filteredContacts);
-  };
-
-  const onFilterContacts = () => {
-    if (filter) {
-      return contacts.filter(
-        (contact) =>
-          contact.name.includes(filter) ||
-          contact.name.toLowerCase().includes(filter)
-      );
-    } else {
-      return contacts;
-    }
-  };
-  
   return (
     <div className={css.container}>
       <span className={css.TitlePhonebook}>Phonebook</span>
-      <ContactForm onSubmit={onFormSubmit} contacts={contacts} />
+      <ContactForm onSubmit={onFormSubmit} contacts={contactsItems}/>
       <span className={css.ContactsTitle}>Contacts</span>
-      <ContactFilter onFilter={onFilter} filter={filter} />
-      <ContactList
-        contacts={contacts}
-        filter={filter}
-        onDelete={onDeleteHandler}
-        filterContacts={onFilterContacts}
-      />
+      {contactsItems && contactsItems.length !== 0 ? (
+        <>
+          <ContactFilter />
+          <ContactList />
+        </>
+      ) : (
+        <Message message="There are no contacts in your phonebook. Please add your first contact!" />
+      )}
     </div>
   );
-};
-
-
+}

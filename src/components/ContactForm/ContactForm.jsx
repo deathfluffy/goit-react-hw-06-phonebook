@@ -1,47 +1,46 @@
-import { nanoid } from 'nanoid';
-import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react';
+import { nanoid } from '@reduxjs/toolkit';
 import css from './ContactForm.module.css';
+import { useSelector, useDispatch } from 'react-redux';
+import { getContacts, addContact } from '../../redux/Contact/ContactsSlice';
+import { useState } from 'react';
 
-
-export default function ContactForm  ({ onSubmit, contacts })  {
+export default function ContactForm() {
+  const contacts = useSelector(getContacts);
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     name: '',
     number: '',
   });
 
-  useEffect(() => {
-    const nameInContacts = contacts.find(
-      (contact) => contact.name.toLowerCase() === formData.name.toLowerCase()
-    );
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
 
-    if (nameInContacts) {
-      alert(`${formData.name} is already in contacts`);
-    }
-  }, [formData.name, contacts]);
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
+  const handleAddContact = () => {
     const { name, number } = formData;
-
+  
+    if (!contacts) {
+      console.error("Contacts are not defined.");
+      return;
+    }
+  
+    const nameInContacts = contacts.find(
+      (contact) => contact.name.toLowerCase() === name.toLowerCase()
+    );
+  
+    if (nameInContacts) {
+      alert(`${name} is already in contacts`);
+      return;
+    }
+  
     const contact = { id: nanoid(), name, number };
-    onSubmit(contact);
-
+    dispatch(addContact(contact));
     setFormData({ name: '', number: '' });
   };
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
   return (
     <div className={css.formContainer}>
-      <form className={css.MainForm} autoComplete="off" onSubmit={handleSubmit}>
+      <form className={css.MainForm} autoComplete="off">
         <div>
           <span className={css.FormLabel} htmlFor="name">
             Name
@@ -51,11 +50,11 @@ export default function ContactForm  ({ onSubmit, contacts })  {
               className={css.InputField}
               type="text"
               name="name"
-              value={formData.name}
-              onChange={handleChange}
-              pattern="^[a-zA-Zа-яА-Я]+([' -][a-zA-Zа-яА-Я ]?[a-zA-Zа-яА-Я]*)*$"
+              pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
               title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
               required
+              onChange={handleInputChange}
+              value={formData.name}
             />
           </div>
         </div>
@@ -65,27 +64,20 @@ export default function ContactForm  ({ onSubmit, contacts })  {
           </span>
           <div>
             <input
-              className={css.InputField}
               type="tel"
               name="number"
-              value={formData.number}
-              onChange={handleChange}
-              pattern="\+?\d{1,4}[-.\s]?\(?\d{1,3}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+              pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
               title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
               required
+              onChange={handleInputChange}
+              value={formData.number}
             />
           </div>
         </div>
-        <button className={css.addButton} type="submit">
+        <button className={css.addButton} type="button" onClick={handleAddContact}>
           Add contact
         </button>
       </form>
     </div>
   );
-};
-
-ContactForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-  contacts: PropTypes.arrayOf(PropTypes.object).isRequired,
-};
-
+}
