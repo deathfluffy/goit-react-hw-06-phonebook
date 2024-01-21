@@ -17,30 +17,38 @@ export default function ContactForm() {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  const isFormValid = () => {
+    return formData.name.trim() !== '' && formData.number.trim() !== '';
+  };
+
   const handleAddContact = () => {
     const { name, number } = formData;
-  
+
     if (!contacts) {
       console.error("Contacts are not defined.");
       return;
     }
-  
+
     const nameInContacts = contacts.find(
       (contact) => contact.name.toLowerCase() === name.toLowerCase()
     );
-  
+
     if (nameInContacts) {
       alert(`${name} is already in contacts`);
       return;
     }
-  
+
     const contact = { id: nanoid(), name, number };
     dispatch(addContact(contact));
     setFormData({ name: '', number: '' });
   };
+  const onFormSubmit = (formData) => {
+    const contact = { id: nanoid(), ...formData };
+    dispatch(addContact(contact));
+  };
   return (
     <div className={css.formContainer}>
-      <form className={css.MainForm} autoComplete="off">
+      <form className={css.MainForm} onSubmit={onFormSubmit} autoComplete="off">
         <div>
           <span className={css.FormLabel} htmlFor="name">
             Name
@@ -74,7 +82,7 @@ export default function ContactForm() {
             />
           </div>
         </div>
-        <button className={css.addButton} type="button" onClick={handleAddContact}>
+        <button className={css.addButton} type="button" onClick={handleAddContact} disabled={!isFormValid()}>
           Add contact
         </button>
       </form>

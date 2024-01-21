@@ -2,9 +2,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import css from './ContactFilter.module.css';
 import { getFilter, setFilter } from '../../redux/ContactFilter/ContactFilter';
 
-export default function ContactFilter ()  {
+export default function ContactFilter() {
   const dispatch = useDispatch();
   const filter = useSelector(getFilter);
+
+  const handleFilterChange = (event) => {
+    dispatch(setFilter(event.currentTarget.value));
+  };
+
   return (
     <section className={css.FilterSection}>
       <form className={css.FormLabel} htmlFor="filter">
@@ -15,12 +20,10 @@ export default function ContactFilter ()  {
           className={css.inputfilter}
           type="text"
           name="filter"
-          onChange={event => dispatch(setFilter(event.currentTarget.value))}
+          onChange={handleFilterChange}
           value={filter}
         />
       </div>
     </section>
   );
-};
-
-;
+}
